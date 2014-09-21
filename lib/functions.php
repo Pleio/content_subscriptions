@@ -168,6 +168,8 @@ function content_subscriptions_send_notification($entity, $annotation) {
 	$annotation_owner = $annotation->getOwnerEntity();
 	$entity_owner = $entity->getOwnerEntity();
 	
+
+
 	// only notify on non private entities
 	if ($entity->access_id != ACCESS_PRIVATE) {
 		// get interested users
@@ -178,7 +180,6 @@ function content_subscriptions_send_notification($entity, $annotation) {
 			"relationship_guid" => $entity->getGUID(),
 			"inverse_relationship" => true,
 			"wheres" => array(
-				"e.guid <> " . $entity_owner->getGUID(), // owner get notified by other means
 				"e.guid <> " . $annotation_owner->getGUID() // don't notify yourself
 			)
 		);
@@ -219,7 +220,7 @@ function content_subscriptions_send_notification($entity, $annotation) {
 		
 		// proccess users
 		$users = new ElggBatch("elgg_get_entities_from_relationship", $options);
-		
+
 		foreach ($users as $user) {
 			// build message
 			$default_subject = $CONFIG->register_objects[$entity->getType()][$entity->getSubtype()];
