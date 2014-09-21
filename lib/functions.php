@@ -152,3 +152,101 @@ function content_subscriptions_check_notification_settings(ElggEntity $container
 	
 	return $result;
 }
+
+/**
+ * Send the notification
+ *
+ * @param ElggEntity $container the container to check (only act on ElggGroups)
+ * @param int        $user_guid the user to check (defaults to current user)
+ *
+ * @return bool
+ */
+function content_subscriptions_send_notification($entity, $annotation) {
+	global $NOTIFICATION_HANDLERS;
+	global $CONFIG;
+
+	$annotation_owner = $annotation->getOwnerEntity();
+	$entity_owner = $entity->getOwnerEntity();
+	
+	// only notify on non private entities
+	if ($entity->access_id != ACCESS_PRIVATE) {
+		// get interested users
+		$options = array(
+			"type" => "user",
+			"limit" => false,
+			"relationship" => CONTENT_SUBCRIPTIONS_SUBSCRIPTION,
+			"relationship_guid" => $entity->getGUID(),
+			"inverse_relationship" => true,
+			"wheres" => array(
+				"e.guid <> " . $entity_owner->getGUID(), // owner get notified by other means
+				"e.guid <> " . $annotation_owner->getGUID() // don't notify yourself
+			)
+		);
+		
+		// exclude group notification subscribers
+		$methods = array();
+		foreach ($NOTIFICATION_HANDLERS as $method => $foo) {
+			$methods[] = "notify" . $method;
+		}
+		
+		$notification_where = "e.guid NOT IN (
+				SELECT guid_one
+				FROM " . elgg_get_config("dbprefix") . "entity_relationships
+				WHERE guid_two = " . $entity->getContainerGUID() . "
+				AND relationship IN ('" . implode("", $methods) . "')
+		)";
+		
+		$options["wheres"][] = $notification_where;
+		
+		// check access limitations
+		switch ($entity->access_id) {
+			case ACCESS_FRIENDS:
+				// this shouldn't happen, so do nothing
+				break;
+			case ACCESS_LOGGED_IN:
+			case ACCESS_PUBLIC:
+				// all users are allowed
+				break;
+			default:
+				// this is an ACL
+				$acl_members = get_members_of_access_collection($entity->access, true);
+				
+				if (!empty($acl_members)) {
+					$options["wheres"][] = "(e.guid IN (" . implode(",", $acl_members) . "))";
+				}
+				break;
+		}
+		
+		// proccess users
+		$users = new ElggBatch("elgg_get_entities_from_relationship", $options);
+		
+		foreach ($users as $user) {
+			// build message
+			$default_subject = $CONFIG->register_objects[$entity->getType()][$entity->getSubtype()];
+			$string = $default_subject . ": " . $entity->getURL();
+			
+			// allow the change of body
+			$body = elgg_trigger_plugin_hook("notify:annotation:message", $annotation->getSubtype(), array(
+				"annotation" => $annotation,
+				"to_entity" => $user,
+				"method" => "site"), $string);
+			if (empty($body) && ($body !== false)) {
+				$body = $string;
+			}
+			
+			// allow the change of subject
+			$subject = elgg_trigger_plugin_hook("notify:annotation:subject", $annotation->getSubtype(), array(
+				"annotation" => $annotation,
+				"to_entity" => $user,
+				"method" => "site"), $default_subject);
+			if (empty($subject)) {
+				$subject = $default_subject;
+			}
+			
+			// send message
+			if ($body !== false) {
+				notify_user($user->getGUID(), $entity->getContainerGUID(), $subject, $body);
+			}
+		}
+	}
+}
