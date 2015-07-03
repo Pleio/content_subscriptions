@@ -36,6 +36,10 @@ function content_subscriptions_create_annotation_handler($event, $type, ElggAnno
 				$parent = $annotation->getEntity();
 				content_subscriptions_send_notification($parent, $annotation);
 				break;
+			case "cafe_comment":
+				$parent = $annotation->getEntity();
+				content_subscriptions_send_notification($parent, $annotation);
+				break;			
 		}
 	}
 }
