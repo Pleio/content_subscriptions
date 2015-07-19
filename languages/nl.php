@@ -14,5 +14,19 @@ $language = array (
   'content_subscriptions:action:subscribe:error:unsubscribe' => 'Er is een onbekende fout opgetreden tijdens het ontvolgen, probeer het nogmaals',
   'content_subscriptions:action:subscribe:success:subscribe' => 'Je blijft nu op de hoogte van deze content',
   'content_subscriptions:action:subscribe:success:unsubscribe' => 'Je blijft niet langer op de hoogte van deze content',
+  'content_subscriptions:notification:comment:subject' => 'Er is een nieuwe reactie op: %s',
+  'content_subscriptions:notification:comment:message' => 'Er is een nieuwe reactie op het item "%s" door %s. De reactie is:
+
+%s
+
+Om te antwoorden of het originele item te zien, klik hier:
+
+%s
+
+Om %s\'s Profile te bekijken, klik hier:
+
+%s
+
+Je kunt niet antwoorden op deze e-mail.',
 );
 add_translation("nl", $language);

@@ -22,8 +22,23 @@ $english = array(
 	'content_subscriptions:action:subscribe:error:unsubscribe' => "An unknown error occured while unsubscribing, please try again",
 	'content_subscriptions:action:subscribe:success:subscribe' => "You've successfully subscribed to updates of this item",
 	'content_subscriptions:action:subscribe:success:unsubscribe' => "You've successfully unsubscribed from updates of this item",
-	'' => "",
-	'' => "",
+
+	'content_subscriptions:notification:comment:subject' => 'There is a new comment on: %s',
+	'content_subscriptions:notification:comment:message' => "There is a new comment on the item \"%s\" from %s. It reads:
+
+
+%s
+
+
+To reply or view the original item, click here:
+
+%s
+
+To view %s's profile, click here:
+
+%s
+
+You cannot reply to this email.",
 );
 
 add_translation("en", $english);

@@ -167,8 +167,6 @@ function content_subscriptions_send_notification($entity, $annotation) {
 
 	$annotation_owner = $annotation->getOwnerEntity();
 	$entity_owner = $entity->getOwnerEntity();
-	
-
 
 	// only notify on non private entities
 	if ($entity->access_id != ACCESS_PRIVATE) {
@@ -222,6 +220,7 @@ function content_subscriptions_send_notification($entity, $annotation) {
 		$users = new ElggBatch("elgg_get_entities_from_relationship", $options);
 
 		foreach ($users as $user) {
+
 			// build message
 			$default_subject = $CONFIG->register_objects[$entity->getType()][$entity->getSubtype()];
 			$string = $default_subject . ": " . $entity->getURL();
@@ -243,7 +242,7 @@ function content_subscriptions_send_notification($entity, $annotation) {
 			if (empty($subject)) {
 				$subject = $default_subject;
 			}
-			
+
 			// send message
 			if ($body !== false) {
 				notify_user($user->getGUID(), $entity->getContainerGUID(), $subject, $body);

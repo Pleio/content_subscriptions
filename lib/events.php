@@ -13,9 +13,14 @@
  * @return void
  */
 function content_subscriptions_create_object_handler($event, $type, ElggObject $object) {
-	if (!empty($object) && ($object instanceof ElggAnswer)) {
-		$parent = $object->getContainerEntity();
-		content_subscriptions_send_notification($parent, $object);
+	if (!empty($object)) {
+		if (elgg_instanceof($object, 'object', 'answer')) {
+			$parent = $object->getContainerEntity();
+			content_subscriptions_send_notification($parent, $object);
+		} elseif (elgg_instanceof($object, 'object', 'comment')) {
+			$parent = $object->getContainerEntity();
+			content_subscriptions_send_notification($parent, $object);
+		}
 	}
 }
 
@@ -36,10 +41,6 @@ function content_subscriptions_create_annotation_handler($event, $type, ElggAnno
 				$parent = $annotation->getEntity();
 				content_subscriptions_send_notification($parent, $annotation);
 				break;
-			case "cafe_comment":
-				$parent = $annotation->getEntity();
-				content_subscriptions_send_notification($parent, $annotation);
-				break;			
 		}
 	}
 }

@@ -32,3 +32,16 @@ function content_subscriptions_default_route_hook($hook, $type, $return_value, $
 		}
 	}
 }
+
+function comment_notify_subject_handler($hook, $type, $return_value, $params) {
+	$comment = $params['annotation'];
+	$message = $comment->getContainerEntity();
+	return elgg_echo("content_subscriptions:notification:comment:subject", array($message->title));
+}
+
+function comment_notify_message_handler($hook, $type, $return_value, $params) {
+	$comment = $params['annotation'];
+	$message = $comment->getContainerEntity();
+	$commenter = $comment->getOwnerEntity();
+	return elgg_echo("content_subscriptions:notification:comment:message", array($message->title, $commenter->name, $comment->description, $comment->getURL(), $commenter->name, $commenter->getURL()));
+}

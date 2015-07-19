@@ -19,14 +19,16 @@ elgg_register_event_handler("init", "system", "content_subscriptions_init");
  * @return void
  */
 function content_subscriptions_init() {
-	
+
 	// register event handlers
 	elgg_register_event_handler("create", "annotation", "content_subscriptions_create_annotation_handler");
 	elgg_register_event_handler("create", "object", "content_subscriptions_create_object_handler");
-	
+
 	// register plugin hooks
 	elgg_register_plugin_hook_handler("route", "discussion", "content_subscriptions_default_route_hook");
-	
+	elgg_register_plugin_hook_handler("notify:annotation:subject", "comment", "comment_notify_subject_handler");
+	elgg_register_plugin_hook_handler("notify:annotation:message", "comment", "comment_notify_message_handler");
+
 	// register actions
 	elgg_register_action("content_subscriptions/subscribe", dirname(__FILE__) . "/actions/subscribe.php");
 }
