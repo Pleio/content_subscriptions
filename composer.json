@@ -1,5 +1,5 @@
 {
-    "name": "coldtrick/content_subscriptions",
+    "name": "pleio/content_subscriptions",
     "type": "elgg-plugin",
     "require": {
         "composer/installers": "~1.0"
