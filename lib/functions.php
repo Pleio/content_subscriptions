@@ -182,21 +182,6 @@ function content_subscriptions_send_notification($entity, $annotation) {
 			)
 		);
 		
-		// exclude group notification subscribers
-		$methods = array();
-		foreach ($NOTIFICATION_HANDLERS as $method => $foo) {
-			$methods[] = "notify" . $method;
-		}
-		
-		$notification_where = "e.guid NOT IN (
-				SELECT guid_one
-				FROM " . elgg_get_config("dbprefix") . "entity_relationships
-				WHERE guid_two = " . $entity->getContainerGUID() . "
-				AND relationship IN ('" . implode("", $methods) . "')
-		)";
-		
-		$options["wheres"][] = $notification_where;
-		
 		// check access limitations
 		switch ($entity->access_id) {
 			case ACCESS_FRIENDS:
@@ -220,7 +205,6 @@ function content_subscriptions_send_notification($entity, $annotation) {
 		$users = new ElggBatch("elgg_get_entities_from_relationship", $options);
 
 		foreach ($users as $user) {
-
 			// build message
 			$default_subject = $CONFIG->register_objects[$entity->getType()][$entity->getSubtype()];
 			$string = $default_subject . ": " . $entity->getURL();
